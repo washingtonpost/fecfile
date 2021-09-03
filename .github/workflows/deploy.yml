@@ -24,9 +24,8 @@ jobs:
           python3 -m pip install --user virtualenv
           python3 -m virtualenv fec
           source fec/bin/activate
-          pip install -r requirements.txt
           pip install twine
-          python setup.py install test sdist bdist_wheel
+          python setup.py install sdist bdist_wheel
           twine upload dist/*
         env:
           TWINE_USERNAME: ${{ secrets.NEWS_ENG_PYPI_USERNAME }}
