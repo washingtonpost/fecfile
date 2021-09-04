@@ -39,8 +39,9 @@ def getMapping_from_regex(mappings, form, version):
 def getMapping(mappings, form, version):
     """ Tries to find the mapping from cache before looking it up w regex """
     key = (form, version)
-    if key in MAPPING_CACHE:
-        return MAPPING_CACHE[key]
+    mapping = MAPPING_CACHE.get(key)
+    if mapping:
+        return mapping
     mapping = getMapping_from_regex(mappings, form, version)
     MAPPING_CACHE[key] = mapping
     return mapping
@@ -65,8 +66,9 @@ def getTypeMapping_from_regex(types, form, version, field):
 def getTypeMapping(types, form, version, field):
     """ caches the mapping to dict """
     key = (form, version, field)
-    if key in TYPE_CACHE:
-        return TYPE_CACHE[key]
+    mapping = TYPE_CACHE.get(key)
+    if mapping:
+        return mapping
     mapping = getTypeMapping_from_regex(types, form, version, field)
     TYPE_CACHE[key] = mapping
     return mapping
