@@ -50,13 +50,13 @@ def loads(input, options={}):
     for item in iter_lines(iterable_input, options=options):
         if item.data_type == 'header':
             out['header'] = item.data
-        if item.data_type == 'summary':
+        elif item.data_type == 'summary':
             out['filing'] = item.data
-        if item.data_type == 'F99_text':
+        elif item.data_type == 'F99_text':
             out['F99_text'] = item.data
-        if item.data_type == 'text':
+        elif item.data_type == 'text':
             out['text'].append(item.data)
-        if item.data_type == 'itemization':
+        elif item.data_type == 'itemization':
             form_type = item.data['form_type']
             if form_type[0] == 'S':
                 form_type = 'Schedule ' + item.data['form_type'][1]
@@ -93,30 +93,28 @@ def iter_lines(lines, options={}):
             stripped = line.strip().upper()
             if stripped == '[BEGINTEXT]' or stripped == '[BEGIN TEXT]':
                 text_section = True
-                continue
-            if stripped == '[ENDTEXT]' or stripped == '[END TEXT]':
+            elif stripped == '[ENDTEXT]' or stripped == '[END TEXT]':
                 text_section = False
                 yield FecItem('F99_text', f99_text)
-                continue
-            if text_section:
+            elif text_section:
                 if f99_text == '':
                     f99_text = line
                 else:
                     f99_text += '\n' + line
-                continue
-            as_strings = options.get('as_strings', False)
-            simple_conversion = options.get('simple_conversion', False)
-            parsed = parse_line(line, version, current_line_num, as_strings, simple_conversion)
-            if parsed is None:
-                continue
-            if summary:
-                if 'form_type' in parsed:
-                    yield FecItem('itemization', parsed)
-                else:
-                    yield FecItem('text', parsed)
             else:
-                summary = True
-                yield FecItem('summary', parsed)
+                as_strings = options.get('as_strings', False)
+                simple_conversion = options.get('simple_conversion', False)
+                parsed = parse_line(line, version, current_line_num, as_strings, simple_conversion)
+                if parsed is None:
+                    continue
+                if summary:
+                    if 'form_type' in parsed:
+                        yield FecItem('itemization', parsed)
+                    else:
+                        yield FecItem('text', parsed)
+                else:
+                    summary = True
+                    yield FecItem('summary', parsed)
 
 
 def fields_from_line(line, use_ascii_28=False):
@@ -197,13 +195,13 @@ def getTyped(form, version, field, value, line_num, simple_conversion=False):
                 if simple_conversion:
                     return value
                 return int(value)
-            if prop['type'] == 'float':
+            elif prop['type'] == 'float':
                 stripped = value.strip()
                 if stripped == '' or stripped.lower() in nones:
                     return None
                 sanitized = stripped.replace('%', '')
                 return float(sanitized)
-            if prop['type'] == 'date':
+            elif prop['type'] == 'date':
                 stripped = value.strip()
                 if stripped == '':
                     return None
